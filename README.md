@@ -132,9 +132,11 @@ poetry run python legal_snippets_postgres_server.py
 Add one of these configurations to your Claude Desktop config file:
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows**: `%APPDATA%\\Claude\\claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ### Basic Version
+
+#### macOS/Linux
 ```json
 {
   "mcpServers": {
@@ -147,7 +149,61 @@ Add one of these configurations to your Claude Desktop config file:
 }
 ```
 
+#### Windows Configuration Options
+
+⚠️ **Important**: On Windows, the `cwd` parameter doesn't always work correctly with Poetry. Use one of these three proven methods:
+
+**Option 1: Direct Python Path (Recommended)**
+```json
+{
+  "mcpServers": {
+    "legal-snippets": {
+      "command": "C:\\Users\\YOUR_USERNAME\\GitHub\\legal-snips-mcp\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\Users\\YOUR_USERNAME\\GitHub\\legal-snips-mcp\\legal_snippets_server.py"
+      ]
+    }
+  }
+}
+```
+
+**Option 2: Batch File Wrapper**
+1. Create `run_server.bat` in your project directory:
+```batch
+@echo off
+cd /d C:\Users\YOUR_USERNAME\GitHub\legal-snips-mcp
+poetry run python legal_snippets_server.py
+```
+
+2. Configure Claude Desktop:
+```json
+{
+  "mcpServers": {
+    "legal-snippets": {
+      "command": "C:\\Users\\YOUR_USERNAME\\GitHub\\legal-snips-mcp\\run_server.bat"
+    }
+  }
+}
+```
+
+**Option 3: CMD with Directory Change**
+```json
+{
+  "mcpServers": {
+    "legal-snippets": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d C:\\Users\\YOUR_USERNAME\\GitHub\\legal-snips-mcp && poetry run python legal_snippets_server.py"
+      ]
+    }
+  }
+}
+```
+
 ### Advanced Version (PostgreSQL)
+
+#### macOS/Linux
 ```json
 {
   "mcpServers": {
@@ -162,6 +218,33 @@ Add one of these configurations to your Claude Desktop config file:
   }
 }
 ```
+
+#### Windows
+Use the same approaches as the Basic Version, but with `legal_snippets_postgres_server.py` instead. For example:
+
+```json
+{
+  "mcpServers": {
+    "legal-snippets-ai": {
+      "command": "C:\\Users\\YOUR_USERNAME\\GitHub\\legal-snips-mcp\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\Users\\YOUR_USERNAME\\GitHub\\legal-snips-mcp\\legal_snippets_postgres_server.py"
+      ],
+      "env": {
+        "DATABASE_URL": "postgresql://postgres:password@localhost:5432/legal_snippets"
+      }
+    }
+  }
+}
+```
+
+### ⚡ Quick Setup Verification
+
+After updating your configuration:
+1. **Save** the claude_desktop_config.json file
+2. **Restart Claude Desktop** completely (quit and reopen)
+3. Check if the server appears in Claude's MCP servers list
+4. Test with a simple command like "list all tags"
 
 ## Example Usage in Claude
 
@@ -201,6 +284,58 @@ poetry run python test_server.py
 
 # Advanced version (after database setup)
 poetry run python setup_postgres.py
+```
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### Windows: "ModuleNotFoundError: No module named 'fastmcp'"
+**Problem**: Poetry dependencies aren't installed or Poetry is running from wrong directory.
+
+**Solutions**:
+1. Ensure you've run `poetry install` in the project directory
+2. Use Option 1 (Direct Python Path) from the Windows configuration above
+3. Verify `.venv` folder exists in your project directory
+
+#### Windows: "Poetry could not find a pyproject.toml file"
+**Problem**: Claude Desktop isn't changing to the correct working directory.
+
+**Solution**: This is a known issue with `cwd` on Windows. Use one of the three Windows configuration options shown above instead of relying on `cwd`.
+
+#### "Server transport closed unexpectedly"
+**Problem**: The server crashed or couldn't start properly.
+
+**Solutions**:
+1. Test the server manually first: `poetry run python legal_snippets_server.py`
+2. Check Python version: must be 3.10 or higher
+3. Ensure all paths in configuration are absolute paths with proper escaping
+
+#### "Server disconnected" in Claude Desktop
+**Problem**: Configuration path or command is incorrect.
+
+**Solutions**:
+1. Verify all paths exist and use double backslashes on Windows
+2. Test the exact command from your configuration in a terminal
+3. Check Claude Desktop logs for detailed error messages
+
+### Quick Diagnostic Commands
+
+```bash
+# Check Poetry installation
+poetry --version
+
+# Verify Python version
+poetry run python --version
+
+# Test server startup
+poetry run python legal_snippets_server.py
+
+# List installed packages
+poetry show
+
+# Reinstall dependencies
+poetry install --no-root
 ```
 
 ## File Structure

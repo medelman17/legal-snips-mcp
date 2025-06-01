@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "legal-snips"
+version = "0.1.0"
+description = "MCP Server for Legal Research Snippets"
+authors = ["User <user@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastmcp = "^2.5.2"
+psycopg2-binary = "^2.9.10"
+asyncpg = "^0.30.0"
+sentence-transformers = "^4.1.0"
+torch = "^2.7.0"
+numpy = "^2.2.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,16 @@
+{
+  "snippets": [
+    {
+      "id": 1,
+      "citation": "Test v. Case, 123 F.3d 456 (Test Cir. 2023)",
+      "key_language": "This is test language",
+      "tags": [
+        "test",
+        "demo"
+      ],
+      "context": "Test context",
+      "case_type": "civil"
+    }
+  ],
+  "next_id": 2
+}
